@@ -34,12 +34,13 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = DJANGO_SECRET_KEY
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
-# DEBUG = False
+# DEBUG = True
+DEBUG = False
 
 
 ALLOWED_HOSTS = ['127.0.0.1',
-                 'localhost']
+                 'localhost',
+                 '5.61.53.235']
 
 
 LOGGING = {
@@ -195,7 +196,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 # ]
 
 # SITE_DOMAIN = PUBLIC_URL
-SITE_DOMAIN = '127.0.0.1:8004'
+SITE_DOMAIN = '5.61.53.235:8000'
 
 PROTOCOL = 'http://'
 

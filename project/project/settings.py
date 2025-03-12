@@ -190,10 +190,10 @@ INTERNAL_IPS = [
 STATIC_URL = "/static/"
 STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
 
-# STATICFILES_DIRS = [
-#     os.path.join(BASE_DIR, 'static'),  # Путь к вашим статическим файлам
-#     # Если есть другие папки со статическими файлами, добавьте их здесь
-# ]
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),  # Путь к вашим статическим файлам
+    # Если есть другие папки со статическими файлами, добавьте их здесь
+]
 
 # SITE_DOMAIN = PUBLIC_URL
 SITE_DOMAIN = '5.61.53.235:8000'

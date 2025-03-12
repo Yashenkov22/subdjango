@@ -34,7 +34,7 @@ class CustomDateTimeFilter(admin.SimpleListFilter):
 
     def queryset(self, request, queryset):
         today = datetime.now()
-        print(today)
+        # print(today)
         if self.value() == 'today':
             start_of_today = today.replace(hour=0, minute=0, second=0, microsecond=0)
             end_of_today = today.replace(hour=23, minute=59, second=59, microsecond=999999)

@@ -1,9 +1,11 @@
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
+from django.db.models import Count, Sum, Value, OuterRef, Subquery
+from django.db.models.functions import Coalesce
 
 from datetime import datetime, timedelta
 
-from .models import Users
+from .models import Users, WbProducts, OzonProducts
 
 from rangefilter.filters import (
     DateRangeFilterBuilder,
@@ -182,6 +184,7 @@ class UsersAdmin(admin.ModelAdmin):
         # 'link_count',
         # 'is_active',
         'utm_source',
+        'product_count',
         'time_create'
     )
 
@@ -193,6 +196,7 @@ class UsersAdmin(admin.ModelAdmin):
         'utm_source',
         'time_create',
         'subscription',
+        'product_count',
     )
 
     ordering = (
@@ -222,3 +226,32 @@ class UsersAdmin(admin.ModelAdmin):
             },
         ),
     ]
+
+    def product_count(self, obj):
+        wb_products = obj.wb_product_count
+        ozon_products = obj.ozon_product_count
+
+        product_count = wb_products + ozon_products
+
+        return f'{product_count} | wb: {wb_products} | ozon: {ozon_products}'
+    
+
+    product_count.short_description = 'Число продуктов'
+
+    def get_queryset(self, request):
+        queryset = super().get_queryset(request)
+
+        wb_products_subquery = WbProducts.objects.filter(
+            user_id=OuterRef('tg_id')
+        ).values('user_id').annotate(
+            total_count=Coalesce(Count('id'), Value(0))
+        ).values('total_count')
+
+        ozon_products_subquery = OzonProducts.objects.filter(
+            user_id=OuterRef('tg_id')
+        ).values('user_id').annotate(
+            total_count=Coalesce(Count('id'), Value(0))
+        ).values('total_count')
+
+        return queryset.annotate(wb_product_count=Subquery(wb_products_subquery),
+                                 ozon_product_count=Subquery(ozon_products_subquery))

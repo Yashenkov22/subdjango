@@ -228,8 +228,8 @@ class UsersAdmin(admin.ModelAdmin):
     ]
 
     def product_count(self, obj):
-        wb_products = obj.wb_product_count
-        ozon_products = obj.ozon_product_count
+        wb_products = obj.wb_product_count if obj.wb_product_count else 0
+        ozon_products = obj.ozon_product_count if obj.ozon_product_count else 0
 
         product_count = wb_products + ozon_products
 

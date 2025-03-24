@@ -224,7 +224,7 @@ class UsersAdmin(admin.ModelAdmin):
     list_filter = (
         CustomDateTimeFilter,
         ("time_create", DateRangeFilterBuilder()),
-        UTMSourceFilter,
+        # UTMSourceFilter,
         # ('time_create', DateRangeQuickSelectListFilterBuilder()),
         # ("time_create", NumericRangeFilterBuilder()),
         # 'time_create',

@@ -5,7 +5,7 @@ from django.db.models.functions import Coalesce
 
 from datetime import datetime, timedelta
 
-from .models import Users, WbProducts, OzonProducts
+from .models import Users, WbProducts, OzonProducts, UTM
 
 from rangefilter.filters import (
     DateRangeFilterBuilder,
@@ -175,6 +175,17 @@ class UTMSourceFilter(admin.filters.SimpleListFilter):
         # print(queryset)
         return queryset
 
+
+class UTMInline(admin.StackedInline):
+    model = UTM
+    extra = 0
+    classes = [
+        'collapse',
+        ]
+
+    def has_change_permission(self, request, obj = ...):
+        return False
+
 #Отображение комментариев в админ панели
 @admin.register(Users)
 class UsersAdmin(admin.ModelAdmin):
@@ -183,10 +194,14 @@ class UsersAdmin(admin.ModelAdmin):
         'tg_id',
         # 'link_count',
         # 'is_active',
-        'utm_source',
+        'get_utm_source',
         'product_count',
-        'time_create'
+        'time_create',
     )
+    inlines = [UTMInline]
+
+    def get_utm_source(self, obj):
+        return obj.utm_source if obj.utm_source and obj.utm_source.startswith('direct') else obj.utm.source
 
     readonly_fields = (
         # 'link_count',
@@ -222,6 +237,7 @@ class UsersAdmin(admin.ModelAdmin):
                            "last_name",
                            "subscription",
                            "utm_source",
+                        #    'related_utm',
                            "time_create"]
             },
         ),
@@ -253,5 +269,19 @@ class UsersAdmin(admin.ModelAdmin):
             total_count=Coalesce(Count('id'), Value(0))
         ).values('total_count')
 
-        return queryset.annotate(wb_product_count=Subquery(wb_products_subquery),
+        return queryset.select_related('utm').annotate(wb_product_count=Subquery(wb_products_subquery),
                                  ozon_product_count=Subquery(ozon_products_subquery))
+    
+
+@admin.register(UTM)
+class UTMAdmin(admin.ModelAdmin):
+    list_display = (
+        'pretty_user',
+        'source',
+    )
+
+    def pretty_user(seld, obj):
+        return f'{obj.user.tg_id} {obj.user.username}'
+    
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('user')

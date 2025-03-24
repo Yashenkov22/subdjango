@@ -271,6 +271,47 @@ class Users(models.Model):
         return f'Пользователь - ID {self.tg_id} {self.username}'
 
 
+class UTM(models.Model):
+    keitaro_id = models.CharField(max_length=255, blank=True, null=True)
+    utm_source = models.CharField(max_length=255, blank=True, null=True)
+    utm_medium = models.CharField(max_length=255, blank=True, null=True)
+    utm_campaign = models.CharField(max_length=255, blank=True, null=True)
+    utm_content = models.CharField(max_length=255, blank=True, null=True)
+    utm_term = models.CharField(max_length=255, blank=True, null=True)
+    banner_id = models.CharField(max_length=255, blank=True, null=True)
+    campaign_name = models.CharField(max_length=255, blank=True, null=True)
+    campaign_name_lat = models.CharField(max_length=255, blank=True, null=True)
+    campaign_type = models.CharField(max_length=255, blank=True, null=True)
+    campaign_id = models.CharField(max_length=255, blank=True, null=True)
+    creative_id = models.CharField(max_length=255, blank=True, null=True)
+    device_type = models.CharField(max_length=255, blank=True, null=True)
+    gbid = models.CharField(max_length=255, blank=True, null=True)
+    keyword = models.CharField(max_length=255, blank=True, null=True)
+    phrase_id = models.CharField(max_length=255, blank=True, null=True)
+    coef_goal_context_id = models.CharField(max_length=255, blank=True, null=True)
+    match_type = models.CharField(max_length=255, blank=True, null=True)
+    matched_keyword = models.CharField(max_length=255, blank=True, null=True)
+    adtarget_name = models.CharField(max_length=255, blank=True, null=True)
+    adtarget_id = models.CharField(max_length=255, blank=True, null=True)
+    position = models.CharField(max_length=255, blank=True, null=True)
+    position_type = models.CharField(max_length=255, blank=True, null=True)
+    source = models.CharField(max_length=255, blank=True, null=True)
+    source_type = models.CharField(max_length=255, blank=True, null=True)
+    region_name = models.CharField(max_length=255, blank=True, null=True)
+    region_id = models.CharField(max_length=255, blank=True, null=True)
+    yclid = models.CharField(max_length=255, blank=True, null=True)
+    client_id = models.CharField(max_length=255, blank=True, null=True)
+    user = models.OneToOneField(Users, on_delete=models.CASCADE, related_name='utm')
+    
+    class Meta:
+        db_table = 'utms'
+        managed = False
+
+    def __str__(self):
+        return f'{self.user.tg_id} {self.keitaro_id} {self.source}'
+
+
+
 class WbProducts(models.Model):
     link = models.CharField(blank=True, null=True)
     short_link = models.CharField(blank=True, null=True)

@@ -191,10 +191,11 @@ class UTMInline(admin.StackedInline):
 class UsersAdmin(admin.ModelAdmin):
     list_display = (
         'username',
-        'tg_id',
+        # 'tg_id',
         # 'link_count',
         # 'is_active',
         'get_utm_source',
+        'utm__utm_campaign',
         'product_count',
         'time_create',
     )
@@ -202,6 +203,8 @@ class UsersAdmin(admin.ModelAdmin):
 
     def get_utm_source(self, obj):
         return obj.utm_source if obj.utm_source and obj.utm_source.startswith('direct') else obj.utm.source
+    
+    get_utm_source.short_description = 'UTM источник'
 
     readonly_fields = (
         # 'link_count',

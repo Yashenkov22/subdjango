@@ -213,7 +213,7 @@ class UsersAdmin(admin.ModelAdmin):
         'last_name',
         'utm_source',
         'time_create',
-        'subscription',
+        # 'subscription',
         'product_count',
     )
 

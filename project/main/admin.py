@@ -1,6 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.models import User, Group
-from django.db.models import Count, Sum, Value, OuterRef, Subquery
+from django.db.models import Count, Sum, Value, OuterRef, Subquery, F
 from django.db.models.functions import Coalesce
 
 from datetime import datetime, timedelta
@@ -240,6 +240,7 @@ class UsersAdmin(admin.ModelAdmin):
                            "last_name",
                            "subscription",
                            "utm_source",
+                           "product_count",
                         #    'related_utm',
                            "time_create"]
             },
@@ -256,7 +257,8 @@ class UsersAdmin(admin.ModelAdmin):
     
 
     product_count.short_description = 'Число продуктов'
-
+    product_count.admin_order_field = 'all_product_count'
+    
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
 
@@ -287,7 +289,8 @@ class UsersAdmin(admin.ModelAdmin):
         ).values('total_count')
 
         return queryset.select_related('utm').annotate(wb_product_count=Subquery(wb_products_subquery),
-                                 ozon_product_count=Subquery(ozon_products_subquery))
+                                                       ozon_product_count=Subquery(ozon_products_subquery),
+                                                       all_product_count=Coalesce(F('wb_product_count'), Value(0)) + Coalesce(F('ozon_product_count'), Value(0)))
     
 
 @admin.register(UTM)

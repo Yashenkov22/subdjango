@@ -232,17 +232,28 @@ class UserProductJob(models.Model):
 
 
 class UserProducts(models.Model):
-    product = models.ForeignKey(Products, models.DO_NOTHING, blank=True, null=True)
-    user = models.ForeignKey('Users', models.DO_NOTHING, blank=True, null=True)
-    link = models.CharField(blank=True, null=True)
-    start_price = models.IntegerField(blank=True, null=True)
-    actual_price = models.IntegerField(blank=True, null=True)
-    sale = models.IntegerField(blank=True, null=True)
-    time_create = models.DateTimeField(blank=True, null=True)
+    product = models.ForeignKey(Products,
+                                models.DO_NOTHING,
+                                verbose_name='Продукт',
+                                blank=True,
+                                null=True)
+    user = models.ForeignKey('Users',
+                             models.DO_NOTHING,
+                             verbose_name='Пользователь',
+                             blank=True,
+                             null=True)
+    link = models.CharField('Ссылка',blank=True, null=True)
+    start_price = models.IntegerField('Начальная цена',blank=True, null=True)
+    actual_price = models.IntegerField('Актуальная цена',blank=True, null=True)
+    sale = models.IntegerField('Скидка',blank=True, null=True)
+    time_create = models.DateTimeField('Время добавления',blank=True, null=True)
 
     class Meta:
         managed = False
         db_table = 'user_products'
+        verbose_name = 'Продукт пользователя'
+        verbose_name_plural = 'Продукты пользователей'
+
 
 
 class Users(models.Model):

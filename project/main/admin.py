@@ -293,6 +293,43 @@ class UsersAdmin(admin.ModelAdmin):
                                                        all_product_count=Coalesce(F('wb_product_count'), Value(0)) + Coalesce(F('ozon_product_count'), Value(0)))
     
 
+@admin.register(UserProducts)
+class UserProductsAdmin(admin.ModelAdmin):
+    list_display = (
+        'user',
+        'product_name',
+        'time_create',
+        'product_marker',
+    )
+
+    list_filter = (
+        # 'product__name',
+        'product__product_marker',
+        'user',
+    )
+
+    ordering = (
+        '-time_create',
+    )
+
+    def product_name(self, obj):
+        return obj.product.name
+    
+    product_name.short_description = 'Название продукта'
+
+    def product_marker(self, obj):
+        return obj.product.product_marker
+    
+    product_name.short_description = 'Маркетплейс'
+
+    def get_queryset(self, request):
+        return super().get_queryset(request).select_related('product', 'user')
+    
+    def has_change_permission(self, request, obj = ...):
+        return False
+        # return super().has_change_permission(request, obj)
+
+
 @admin.register(UTM)
 class UTMAdmin(admin.ModelAdmin):
     list_display = (

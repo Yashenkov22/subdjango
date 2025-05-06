@@ -181,6 +181,9 @@ class Products(models.Model):
         managed = False
         db_table = 'products'
 
+    def __str__(self):
+        return self.name
+
 
 class Punkts(models.Model):
     index = models.BigIntegerField(blank=True, null=True)

@@ -25,11 +25,10 @@ JOB_STORE_URL = os.environ.get('JOB_STORE_URL')
 DB_USER = os.environ.get('DB_USER')
 DB_PASS = os.environ.get('POSTGRES_PASSWORD')
 DB_HOST = os.environ.get('POSTGRES_HOST')
-DB_PORT = os.environ.get('DB_PORT')
+DB_PORT = os.environ.get('POSTGRES_PORT')
 DB_NAME = os.environ.get('DB_NAME')
 
 PGBOUNCER_HOST = os.environ.get('PGBOUNCER_HOST')
-
 
 db_url = URL.create(
     'postgresql+asyncpg',

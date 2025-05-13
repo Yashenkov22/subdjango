@@ -274,6 +274,10 @@ class Users(models.Model):
     utm_source = models.CharField('UTM метка',
                                   blank=True,
                                   null=True)
+    wb_total_count = models.IntegerField('Товары WB за всё время',
+                                         db_default=0)
+    ozon_total_count = models.IntegerField('Товары OZON за всё время',
+                                           db_default=0)
 
     class Meta:
         managed = False

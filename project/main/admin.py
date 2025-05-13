@@ -2,10 +2,13 @@ from django.contrib import admin
 from django.contrib.auth.models import User, Group
 from django.db.models import Count, Sum, Value, OuterRef, Subquery, F
 from django.db.models.functions import Coalesce
+from django.urls import path
+from django.template.response import TemplateResponse
 
 from datetime import datetime, timedelta
 
 from .models import Users, WbProducts, OzonProducts, UTM, UserProducts, Products
+from .views import custom_admin_view
 
 from rangefilter.filters import (
     DateRangeFilterBuilder,
@@ -15,8 +18,57 @@ from rangefilter.filters import (
 )
 
 
-admin.site.unregister(User)
-admin.site.unregister(Group)
+class MyAdminSite(admin.AdminSite):
+    index_template = "admin/custom_index.html"
+    # site_header = "Custom Administration"
+    def dashboard_page(self, request):
+        return custom_admin_view(request, self=self)
+        # context = {"text": "Hello Admin", 
+        #            "page_name": "Custom Page"}
+        # return TemplateResponse(request,
+        #                         "admin/custom_page.html", 
+        #                         context)
+
+    def get_urls(self):
+        urls = super().get_urls()
+        # print(urls)
+        custom_urls = [
+            path('dashboard/', admin.site.admin_view(self.dashboard_page), name='dashboard_page'),
+        ]
+        return custom_urls + urls
+
+    def get_app_list(self, request, app_label=None):
+        app_list = super().get_app_list(request, app_label)
+        if app_label is None or app_label == 'custom':
+            app_list.append(
+                {
+                    "name": "Общее",
+                    "app_label": "custom",
+                    "models": [
+                        {
+                            "name": "Статистика",
+                            "object_name": "dashboard",
+                            "admin_url": "/admin/dashboard",
+                            "view_only": True,
+                        }
+                    ],
+                }
+            )
+        return app_list
+    
+
+    # def dashboard_view(self, request):
+    #     context = dict(self.each_context(request))
+    #     print(432)
+    #     print(context)
+    #     # context['parameters'] = config.get_parameters()
+    #     return TemplateResponse(request, 'admin/dashboard/custom_admin.page.html', context)
+    
+
+admin.site = MyAdminSite()
+
+# admin.site.unregister(User)
+# admin.site.unregister(Group)
 
 
 class CustomDateTimeFilter(admin.SimpleListFilter):
@@ -187,7 +239,7 @@ class UTMInline(admin.StackedInline):
         return False
 
 #Отображение комментариев в админ панели
-@admin.register(Users)
+# @admin.register(Users)
 class UsersAdmin(admin.ModelAdmin):
     list_display = (
         'username',
@@ -197,6 +249,7 @@ class UsersAdmin(admin.ModelAdmin):
         'get_utm_source',
         'utm__utm_campaign',
         'product_count',
+        'product_all_time_count',
         'time_create',
     )
     inlines = [UTMInline]
@@ -215,6 +268,7 @@ class UsersAdmin(admin.ModelAdmin):
         'time_create',
         # 'subscription',
         'product_count',
+        'product_all_time_count',
     )
 
     ordering = (
@@ -241,6 +295,7 @@ class UsersAdmin(admin.ModelAdmin):
                            "subscription",
                            "utm_source",
                            "product_count",
+                           "product_all_time_count",
                         #    'related_utm',
                            "time_create"]
             },
@@ -255,9 +310,19 @@ class UsersAdmin(admin.ModelAdmin):
 
         return f'{product_count} | wb: {wb_products} | ozon: {ozon_products}'
     
+    def product_all_time_count(self, obj):
+        wb_products = obj.wb_total_count
+        ozon_products = obj.ozon_total_count
+
+        product_count = wb_products + ozon_products
+
+        return f'{product_count} | wb: {wb_products} | ozon: {ozon_products}'
 
     product_count.short_description = 'Число продуктов'
     product_count.admin_order_field = 'all_product_count'
+
+    product_all_time_count.short_description = 'Число продуктов за всё время'
+    product_all_time_count.admin_order_field = 'all_product_count'
     
     def get_queryset(self, request):
         queryset = super().get_queryset(request)
@@ -290,16 +355,19 @@ class UsersAdmin(admin.ModelAdmin):
 
         return queryset.select_related('utm').annotate(wb_product_count=Subquery(wb_products_subquery),
                                                        ozon_product_count=Subquery(ozon_products_subquery),
-                                                       all_product_count=Coalesce(F('wb_product_count'), Value(0)) + Coalesce(F('ozon_product_count'), Value(0)))
+                                                       all_product_count=Coalesce(F('wb_product_count'), Value(0)) + Coalesce(F('ozon_product_count'), Value(0)),
+                                                       all_product_all_time_count=Coalesce(F('wb_total_count'), Value(0)) + Coalesce(F('ozon_total_count'), Value(0)))
     
+admin.site.register(Users, UsersAdmin)
 
-@admin.register(UserProducts)
+
+# @admin.register(UserProducts)
 class UserProductsAdmin(admin.ModelAdmin):
     list_display = (
         'user',
         'product_name',
-        'time_create',
         'product_marker',
+        'time_create',
     )
 
     list_filter = (
@@ -330,8 +398,9 @@ class UserProductsAdmin(admin.ModelAdmin):
         return False
         # return super().has_change_permission(request, obj)
 
+admin.site.register(UserProducts, UserProductsAdmin)
 
-@admin.register(UTM)
+# @admin.register(UTM)
 class UTMAdmin(admin.ModelAdmin):
     list_display = (
         'pretty_user',
@@ -343,3 +412,58 @@ class UTMAdmin(admin.ModelAdmin):
     
     def get_queryset(self, request):
         return super().get_queryset(request).select_related('user')
+    
+admin.site.register(UTM, UTMAdmin)
+
+# Переопределяем метод get_urls стандартного admin.site
+# custom_admin_urls =  [
+#         path('dashboard/', admin.site.admin_view(custom_admin_view), name='custom_admin_view'),
+#         ]
+# admin_urls = admin.site.get_urls()
+
+# def get_admin_urls():
+#     custom_urls = [
+#         path('dashboard/', admin.site.admin_view(custom_admin_view), name='custom_admin_view'),
+#     ]
+
+#     return custom_urls + admin_urls
+
+# admin.site.get_urls = lambda: get_admin_urls()
+
+
+# class MyAdminSite(admin.AdminSite):
+#     # site_header = "Custom Administration"
+#     def get_urls(self):
+#         urls = super().get_urls()
+#         # print(urls)
+#         custom_urls = [
+#             path('dashboard/', admin.site.admin_view(custom_admin_view), name='custom_admin_view'),
+#         ]
+#         return custom_urls + urls
+
+#     def get_app_list(self, request, app_label=None):
+#         app_list = super().get_app_list(request, app_label)
+#         if app_label is None or app_label == 'custom':
+#             app_list.append(
+#                 {
+#                     "name": "Custom",
+#                     "app_label": "custom",
+#                     "models": [
+#                         {
+#                             "name": "Dashboard",
+#                             "object_name": "dashboard",
+#                             "admin_url": "/admin/dashboard",
+#                             "view_only": True,
+#                         }
+#                     ],
+#                 }
+#             )
+#         return app_list
+
+#     def dashboard_view(self, request):
+#         context = dict(self.each_context(request))
+#         # context['parameters'] = config.get_parameters()
+#         return TemplateResponse(request, 'admin/dashboard/custom_admin.page.html', context)
+    
+
+# admin.site = MyAdminSite()

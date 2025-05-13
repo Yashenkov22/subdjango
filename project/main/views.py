@@ -6,6 +6,7 @@ from django.db.models import Count
 
 from .models import UserProducts, Users, Punkts, Products
 
+
 @staff_member_required
 def custom_admin_view(request, self=None):
     start_date = request.GET.get('start_date')
@@ -84,6 +85,8 @@ def custom_admin_view(request, self=None):
         'ozon_count': ozon_count,
         'user_count': len(users_added),
         'selected_date': selected_date,
+        'start_date': start_date,
+        'end_date': end_date,
         'popular_cities': popular_cities,
         'popular_products': popular_products,
         'page_name': 'Статистика',

@@ -63,7 +63,12 @@
         <ol>
             {% for product in popular_products %}
                 <li>
-                    <p><a href="http://localhost:8000/admin/products/{{ product.pk }}/change/">{{ product.name }}</a></p>
+                    {% if product.product_marker == 'wb' %}
+                        <p><a href="https://www.wildberries.ru/catalog/{{ product.short_link }}/detail.aspx">{{ product.name }}</a></p>
+                    {% else %}
+                        <p><a href="https://www.ozon.ru/product/{{ product.short_link }}/">{{ product.name }}</a></p>
+                    {% endif %}
+                    
                     <p>Маркетплейс: {{ product.product_marker|upper }}</p>
                     <p>Кол-во пользователей, отслеживающих товар: <b>{{ product.user_count }}</b></p>
                 </li>

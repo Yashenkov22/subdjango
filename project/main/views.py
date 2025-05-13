@@ -25,25 +25,25 @@ def custom_admin_view(request, self=None):
         if not end_date:
             # selected_date = f'{start_date}'
 
-            start_date = datetime.strptime(start_date, "%Y-%m-%d")
+            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d")
 
-            selected_date = start_date.strftime("%d.%m.%Y")
+            selected_date = start_date_obj.strftime("%d.%m.%Y")
 
-            start_of_time = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
-            end_of_time = start_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+            start_of_time = start_date_obj.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_of_time = start_date_obj.replace(hour=23, minute=59, second=59, microsecond=999999)
         else:
             # selected_date = f'{start_date} - {end_date}'
 
-            start_date = datetime.strptime(start_date, "%Y-%m-%d")
-            end_date = datetime.strptime(end_date, "%Y-%m-%d")
+            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d")
+            end_date_obj = datetime.strptime(end_date, "%Y-%m-%d")
 
-            start_selected_date = start_date.strftime("%d.%m.%Y")
-            end_selected_date = end_date.strftime("%d.%m.%Y")
+            start_selected_date = start_date_obj.strftime("%d.%m.%Y")
+            end_selected_date = end_date_obj.strftime("%d.%m.%Y")
 
             selected_date = f'{start_selected_date} -> {end_selected_date}'
 
-            start_of_time = start_date.replace(hour=0, minute=0, second=0, microsecond=0)
-            end_of_time = end_date.replace(hour=23, minute=59, second=59, microsecond=999999)
+            start_of_time = start_date_obj.replace(hour=0, minute=0, second=0, microsecond=0)
+            end_of_time = end_date_obj.replace(hour=23, minute=59, second=59, microsecond=999999)
 
     products_added = UserProducts.objects.select_related('product')\
                                                 .filter(time_create__range=(start_of_time, end_of_time))\

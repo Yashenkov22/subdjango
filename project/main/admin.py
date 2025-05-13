@@ -19,7 +19,7 @@ from rangefilter.filters import (
 
 
 class MyAdminSite(admin.AdminSite):
-    index_template = "admin/custom_index.html"
+    # index_template = "admin/custom_index.html"
     # site_header = "Custom Administration"
     def dashboard_page(self, request):
         return custom_admin_view(request, self=self)

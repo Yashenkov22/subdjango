@@ -7,7 +7,7 @@ from django.template.response import TemplateResponse
 
 from datetime import datetime, timedelta
 
-from .models import Users, WbProducts, OzonProducts, UTM, UserProducts, Products
+from .models import Category, CategoryChannelLink, ChannelLink, Users, WbProducts, OzonProducts, UTM, UserProducts, Products
 from .views import custom_admin_view
 
 from rangefilter.filters import (
@@ -414,6 +414,28 @@ class UTMAdmin(admin.ModelAdmin):
         return super().get_queryset(request).select_related('user')
     
 admin.site.register(UTM, UTMAdmin)
+
+class CategoryChannelLinkInline(admin.TabularInline):
+    model = CategoryChannelLink
+    extra = 1
+
+class CategoryAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+    )
+    inlines = [
+        CategoryChannelLinkInline,
+    ]
+
+admin.site.register(Category, CategoryAdmin)
+
+
+class ChannelLinkAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+    )
+
+admin.site.register(ChannelLink, ChannelLinkAdmin)
 
 # Переопределяем метод get_urls стандартного admin.site
 # custom_admin_urls =  [

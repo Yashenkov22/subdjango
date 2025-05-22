@@ -49,7 +49,10 @@ class PopularProductAdmin(admin.ModelAdmin):
         'category',
     )
 
-    raw_id_fields = ('category', )
+    raw_id_fields = (
+        'category',
+        'product',
+    )
 
     list_filter = (
         CustomCategoryFilter,

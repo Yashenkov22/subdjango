@@ -87,7 +87,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #
-    'main',
+    'main.apps.MainConfig',
+    'popular_products.apps.PopularProductsConfig',
     #,
     'rangefilter',
 ]

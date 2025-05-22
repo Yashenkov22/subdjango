@@ -180,6 +180,8 @@ class Products(models.Model):
     class Meta:
         managed = False
         db_table = 'products'
+        verbose_name = 'Продукт'
+        verbose_name_plural = 'Продукты'
 
     def __str__(self):
         return self.name

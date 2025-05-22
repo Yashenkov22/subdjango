@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from project.main.models import Products
+
 from .models import CategoryChannelLink, Category, ChannelLink, PopularProduct
 
 # Register your models here.
@@ -64,3 +66,14 @@ class PopularProductAdmin(admin.ModelAdmin):
                                                             'category__parent')
 
 admin.site.register(PopularProduct, PopularProductAdmin)
+
+
+
+class ProductsAdmin(admin.ModelAdmin):
+    list_display = (
+        'name',
+        'product_marker',
+    )
+
+
+admin.site.register(Products, ProductsAdmin)

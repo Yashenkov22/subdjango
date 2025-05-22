@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from project.main.models import Products
+from main.models import Products
 
 from .models import CategoryChannelLink, Category, ChannelLink, PopularProduct
 
